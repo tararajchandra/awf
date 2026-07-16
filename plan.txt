@@ -1,0 +1,300 @@
+📋 Section 1 — Project Identity & Stack
+Build a full-stack NGO web application for "Anokha Welfare Foundation (AWF)".
+
+BRAND IDENTITY:
+- Name: Anokha Welfare Foundation (AWF)
+- Tagline: "Empowering Those in Need. Trusted for Truth."
+- Philosophy: "Be truth, we are for truth soul"
+- Color Palette: Gold (#C87000, #B8860B), Orange (#E05A00, #FF6B00), 
+  Off-white (#FAF7F0), Deep Brown (#3B2000) for text
+- Logo: AWF monogram with gold metallic treatment
+- Tone: Professional, trustworthy, warm, humanitarian
+
+TECH STACK:
+- Frontend: React + Next.js (App Router)
+- Styling: Tailwind CSS with custom gold/orange theme tokens
+- Backend: Node.js / Next.js API routes
+- Database: PostgreSQL via Prisma ORM
+- Auth: NextAuth.js with role-based access (Admin, Member, Staff)
+- Payments: Razorpay SDK (UPI, QR Code, Net Banking, Cards)
+- File Storage: AWS S3 or Cloudinary for ID document uploads
+- Email: Nodemailer + SMTP for receipts and OTPs
+- SMS: Twilio or MSG91 for Indian mobile OTPs
+- Hosting: Vercel (frontend) + Railway/Supabase (database)
+🎨 Section 2 — Design System & UI
+DESIGN SYSTEM:
+Create a luxury humanitarian aesthetic — gold metallic gradients on 
+clean white surfaces, geometric polygon backgrounds (subtle grey 
+triangulated mesh like the reference screenshots).
+
+CSS Custom Properties to define:
+--awf-gold: #C87000;
+--awf-gold-light: #E8A030;
+--awf-gold-dark: #8B5E00;
+--awf-orange: #E05A00;
+--awf-orange-bright: #FF6B00;
+--awf-cream: #FAF7F0;
+--awf-text: #2C1A00;
+--awf-muted: #6B4C1A;
+
+TYPOGRAPHY:
+- Display headings: Cinzel Decorative or Cormorant Garamond (gold color)
+- Body text: Nunito Sans or DM Sans (warm brown)
+- UI labels: Inter (neutral gray)
+
+HERO SECTION:
+- Full-viewport with subtle animated polygon mesh background
+- AWF logo centered with gold metallic shine animation (CSS keyframes)
+- Tagline in large serif font
+- Two CTA buttons: 
+  * "Become a Member" (gold filled, rounded)
+  * "Direct Donation" (orange filled, rounded)
+- Floating particle effect or animated gold dots
+
+NAVIGATION BAR:
+Sticky, glassmorphism style with gold accent underlines
+Links: Home | About Us | Social Projects | Membership | Donate | Contact
+Mobile: Hamburger menu with slide-in drawer
+👥 Section 3 — Membership System
+MEMBERSHIP TIERS (3 levels, displayed as pricing cards):
+
+1. GENERAL MEMBER (Annual)
+   - Price: Configurable via admin
+   - Benefits: Digital ID Card, Foundation newsletters, 
+     project updates
+   - Badge color: Silver/Gray
+   - Razorpay Plan ID: general_annual
+
+2. EXECUTIVE MEMBER (Annual, Renewable)
+   - Price: Configurable via admin  
+   - Benefits: All General benefits + Priority Emergency Help 
+     access + Official Certification letter
+   - Badge color: Gold (#C87000)
+   - Razorpay Plan ID: executive_annual
+
+3. LIFETIME MEMBER (Permanent)
+   - Price: Configurable via admin
+   - Benefits: All Executive benefits + Special Honourarium 
+     eligibility + Permanent voting rights in the trust
+   - Badge color: Deep Gold / Royal
+   - Razorpay Plan ID: lifetime_permanent
+
+MEMBERSHIP REGISTRATION FORM:
+Multi-step wizard with progress bar (gold color):
+
+Step 1 — Personal Details:
+  - Full Name (required)
+  - Date of Birth
+  - Gender
+  - Mobile Number (with OTP verification)
+  - Email Address
+  - Residential Address (State, District, Pin Code)
+  - Occupation
+
+Step 2 — Identity Verification:
+  - ID Type selector: Aadhaar / PAN / Voter ID
+  - Secure file upload (drag-and-drop, preview, max 5MB PDF/JPG)
+  - Passport-size photo upload
+
+Step 3 — Bank Details (for honourarium eligibility):
+  - Account Holder Name
+  - Bank Name
+  - Account Number (masked display)
+  - IFSC Code
+  - UPI ID (optional)
+
+Step 4 — Membership Selection & Payment:
+  - Tier comparison cards (highlighted selection)
+  - Razorpay checkout button
+  - After payment: auto-generate digital ID card (PNG/PDF)
+  - Send welcome email with membership certificate
+
+DATABASE SCHEMA (Prisma):
+model Member {
+  id          String   @id @default(cuid())
+  memberId    String   @unique // AWF-2024-XXXXX format
+  fullName    String
+  mobile      String   @unique
+  email       String?
+  address     Json
+  idType      String
+  idFileUrl   String
+  photoUrl    String
+  bankDetails Json?
+  memberTier  MemberTier
+  status      MemberStatus @default(PENDING)
+  expiresAt   DateTime?
+  razorpayPaymentId String?
+  createdAt   DateTime @default(now())
+}
+💳 Section 4 — Donation Portal
+DONATION CATEGORIES (shown as icon cards, Razorpay Secure badge):
+
+1. Emergency Help — for crisis situations (medical, disaster)
+2. ID Verified Donation — authenticated donor, tax receipt issued
+3. Project Specific Donation — donor chooses a project to fund
+   - Sub-projects: Old Age Home, Education for Children, 
+     Widow Support, Health & Hospitals, Water Treatment, 
+     Orphanage, Self-Help Groups
+
+DONATION FLOW:
+1. User selects donation type
+2. Enters amount (preset buttons: ₹500, ₹1000, ₹2000, ₹5000 + custom)
+3. Optional: donor name, PAN (for 80G tax exemption), message
+4. Razorpay checkout (UPI, Cards, Net Banking, QR Code)
+5. Post-payment: 
+   - 80G receipt PDF emailed
+   - Donation entry in transparency ledger
+   - SMS acknowledgment
+
+TRANSPARENCY LEDGER PAGE:
+Public page showing total donations received per project with 
+progress bar toward annual goal. No individual donor data exposed.
+🏥 Section 5 — Service Modules & Map
+SERVICE MODULES (4 main pillars as icon grid):
+
+1. OLD AGE HOME
+   Icon: Elderly person (orange & gold)
+   Pages: Overview, Location map, Resident stories, 
+          How to support / volunteer
+
+2. EDUCATION FOR CHILDREN
+   Icon: School building
+   Pages: Schools list, Scholarships, Book donation drive, 
+          Library portal, Student progress reports
+
+3. WIDOW DONATION
+   Icon: Shield/hands
+   Pages: Program details, Application form for beneficiaries, 
+          Verification status tracker
+
+4. HEALTH & HOSPITALS
+   Icon: Medical caduceus
+   Pages: Partnered hospitals, Free health camps schedule, 
+          Medicine donation, Nursing college info
+
+DISTRICT MAP SECTION:
+Heading: "Our Presence: Serving and Building in Your Districts"
+- Interactive SVG map of the operating state (e.g., Uttar Pradesh or 
+  all India)
+- Clickable districts showing: Hospitals, Schools, Water Plants 
+  with orange/gold pin icons
+- Tooltip on hover: district name + active projects count
+- Legend: Hospital (red cross), School (building), 
+          Water (blue drop)
+- "State District Wise" label
+
+ADDITIONAL MODULES:
+- Religious Harmony: Honourarium management for Imam, 
+  Brahmin, Sardar, Padri
+- Infrastructure: Water Treatment Plant monitoring dashboard
+- Agriculture: Organic farming project tracker
+- Livelihood: Handloom & Women Self-Help Group portal
+🔐 Section 6 — Member & Admin Portal
+MEMBER LOGIN PORTAL (sidebar widget on homepage):
+- Username (Mobile or Member ID)
+- Password input
+- "Login" button (gold CTA)
+- "Forgot Password" (OTP-based reset)
+- After login: redirect to Member Dashboard
+
+MEMBER DASHBOARD:
+- Digital ID Card (downloadable PNG/PDF with AWF watermark)
+- Membership expiry countdown + renewal CTA
+- Donation history with receipt download
+- Emergency help request button (24hr response SLA)
+- Project updates feed
+
+ADMIN CONTROL PANEL (private route /admin):
+Roles: Super Admin, Accountant, Legal Advisor, Receptionist
+
+Pages:
+1. Members Manager — list, approve, suspend, export CSV
+2. Donations Manager — all transactions, 80G batch export
+3. Projects Manager — CRUD for all service module content
+4. Emergency Requests — incoming help requests with priority queue
+5. Honorarium Manager — schedule and record payments to 
+   religious leaders
+6. Document Vault — secure ID document viewer (role-restricted)
+7. Reports — monthly donor reports, membership stats, 
+   project impact metrics
+8. Global Logistics — import/export tracking for 
+   goods/aid distribution
+
+SECURITY REQUIREMENTS:
+- All document URLs are signed (expire in 1 hour)
+- OTP required for password change
+- Admin actions logged with IP + timestamp (audit trail)
+- Rate limiting on login endpoints (max 5 attempts)
+- HTTPS only, HSTS headers
+- CSRF protection on all forms
+📄 Section 7 — Pages & Sitemap
+FULL SITEMAP:
+
+PUBLIC PAGES:
+/ ..................... Home (hero, service icons, map, membership cards)
+/about ................. Foundation history, philosophy, trustees
+/social-projects ....... All 4 service pillars with sub-pages
+/social-projects/old-age-home
+/social-projects/education
+/social-projects/widow-support
+/social-projects/health
+/membership ............ Tier comparison + registration wizard
+/donate ................ Donation portal (3 types)
+/transparency .......... Public ledger, YouTube/Telegram feed embed
+/contact ............... Office locations, helpline, Google Maps embed
+
+AUTHENTICATED PAGES:
+/member/dashboard ...... Member home (ID card, history, requests)
+/member/emergency ...... Submit emergency help request
+/member/profile ........ Update personal details
+
+ADMIN PAGES (role-gated):
+/admin ................. Dashboard overview stats
+/admin/members ......... Member management
+/admin/donations ....... Transaction management
+/admin/projects ........ Content management
+/admin/emergency ....... Help request queue
+/admin/honorarium ...... Religious leader payments
+/admin/reports ......... Analytics & exports
+
+FOOTER:
+- AWF logo (smaller)
+- Mission statement snippet
+- Quick links (About, Donate, Contact, Privacy Policy)
+- Social links: YouTube, Telegram, WhatsApp
+- Razorpay Secure badges
+- Copyright © Anokha Welfare Foundation. All rights reserved.
+- "Registered NGO | FCRA Compliant | 80G Certified" badges
+
+MOBILE RESPONSIVENESS:
+All pages must be fully responsive. Priority: mobile-first.
+Bottom navigation bar on mobile with: Home, Donate, Membership, 
+Login icons.
+⚡ Section 8 — Start Here (First Prompt)
+USE THIS AS YOUR VERY FIRST PROMPT TO AN AI BUILDER:
+
+---
+"Build the homepage of the Anokha Welfare Foundation (AWF) web app 
+using Next.js 14 App Router + Tailwind CSS. 
+
+The homepage must include:
+1. Sticky navigation bar with gold accent, links: Home, About Us, 
+   Social Projects, Membership, Donate, Contact
+2. Hero section with subtle animated polygon mesh background in light 
+   grey, centered AWF logo (text-based with gold metallic gradient), 
+   tagline 'Empowering Those in Need. Trusted for Truth.' in a serif 
+   font, and two CTA buttons — 'Become a Member' (gold) and 
+   'Direct Donation' (orange)
+3. 4-icon service row: Old Age Home, Education for Children, 
+   Widow Donation, Health & Hospitals — each with orange-gold icon 
+   and label, separated by vertical dividers
+4. Membership Levels section with 3 cards: Basic, Executive, Lifetime 
+   — gold border on Executive (featured), each with Razorpay badge
+5. Sidebar membership login widget (Username, Password, Login button)
+6. Footer with AWF branding, social links, NGO certification badges
+
+Color tokens: gold #C87000, orange #E05A00, cream background #FAF7F0.
+Font: Cormorant Garamond for headings, DM Sans for body.
+All components must be reusable and placed in /components/awf/."
+---

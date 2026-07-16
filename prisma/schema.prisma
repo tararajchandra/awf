@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Member {
+  id                    String   @id @default(cuid())
+  memberId              String   @unique // AWF-2024-XXXXX format
+  fullName              String
+  dateOfBirth           DateTime?
+  gender                String?
+  mobile                String   @unique
+  email                 String?
+  address               String   // JSON string { state, district, pinCode, full }
+  occupation            String?
+  
+  // Identity Verification
+  idType                String
+  idFileUrl             String
+  photoUrl              String
+  
+  // Bank Details
+  bankDetails           String?  // JSON string { accountHolder, bankName, accountNumber, ifscCode, upiId }
+  
+  // Membership
+  memberTier            String   @default("GENERAL")
+  status                String   @default("PENDING")
+  expiresAt             DateTime?
+  
+  // Payment
+  razorpayPaymentId     String?
+  razorpaySubscriptionId String?
+  
+  // OTP
+  otpVerified           Boolean @default(false)
+  
+  // Referrals & Activation
+  referredById          String?
+  referredBy            Member?  @relation("Referrals", fields: [referredById], references: [id])
+  referrals             Member[] @relation("Referrals")
+  smsReminderCount      Int      @default(0) // 0: no reminders, 1: 24h sent, 2: 48h sent
+  
+  // Timestamps
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model MembershipTier {
+  id                    String   @id @default(cuid())
+  name                  String
+  annualPrice           Int      // in paise
+  lifeTimePrice         Int?     // for lifetime tier
+  benefits              String   // JSON string of array
+  razorpayPlanId        String   @unique
+  isActive              Boolean  @default(true)
+  createdAt             DateTime @default(now())
+}
+
+model Payment {
+  id                    String   @id @default(cuid())
+  memberId              String
+  amount                Int      // in paise
+  currency              String   @default("INR")
+  razorpayPaymentId     String   @unique
+  razorpayOrderId       String?
+  status                String   // created, authorized, captured, failed
+  method                String?  // card, netbanking, wallet, upi
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model DigitalIdCard {
+  id                    String   @id @default(cuid())
+  memberId              String   @unique
+  cardNumber            String   @unique
+  pdfUrl                String
+  generatedAt           DateTime @default(now())
+  expiresAt             DateTime?
+}
+
+model EmergencyReliefRequest {
+  id                    String   @id @default(cuid())
+  referralMemberId      String   // ID of the member requesting relief
+  reason                String
+  status                String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model Newsletter {
+  id                    String   @id @default(cuid())
+  title                 String
+  fileUrl               String   // Link to the PDF or file
+  createdAt             DateTime @default(now())
+}
+
