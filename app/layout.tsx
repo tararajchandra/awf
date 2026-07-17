@@ -27,7 +27,9 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.ico',
   },
-  canonical: 'https://anokhawelfare.org',
+  alternates: {
+    canonical: 'https://anokhawelfare.org',
+  },
 }
 
 export default function RootLayout({

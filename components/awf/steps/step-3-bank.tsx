@@ -12,7 +12,7 @@ interface Step3Props {
   data: FormData
   errors: Record<string, string>
   onUpdate: (updates: Partial<FormData>) => void
-  setErrors: (errors: Record<string, string>) => void
+  setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>
 }
 
 export default function Step3BankDetails({

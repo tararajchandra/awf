@@ -20,9 +20,7 @@ export async function createRazorpaySubscription(
       customer_notify: 1,
       quantity: 1,
       total_count: totalCount,
-      email: customerEmail,
-      phone: customerPhone,
-    })
+    } as any)
     return subscription
   } catch (error) {
     console.error('Razorpay subscription error:', error)

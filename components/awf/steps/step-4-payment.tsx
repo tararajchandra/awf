@@ -8,7 +8,7 @@ interface Step4Props {
   data: FormData
   errors: Record<string, string>
   onUpdate: (updates: Partial<FormData>) => void
-  setErrors: (errors: Record<string, string>) => void
+  setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>
   loading: boolean
   setLoading: (loading: boolean) => void
 }
@@ -56,6 +56,21 @@ export default function Step4MembershipPayment({
     setErrors({})
   }
 
+  const uploadFile = async (file: File | null) => {
+    if (!file) return null
+    const formData = new FormData()
+    formData.append('file', file)
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    })
+    const result = await res.json()
+    if (result.success) {
+      return result.url
+    }
+    throw new Error(result.error || 'Upload failed')
+  }
+
   const handlePayment = async () => {
     if (!data.selectedTier) {
       setErrors({ selectedTier: 'Please select a membership tier' })
@@ -64,10 +79,23 @@ export default function Step4MembershipPayment({
 
     setPaymentProcessing(true)
     try {
+      // 1. Upload files first
+      const idFile1Url = await uploadFile(data.idFile1 as any)
+      const idFile2Url = await uploadFile(data.idFile2 as any)
+      const photoFileUrl = await uploadFile(data.photoFile as any)
+
+      // 2. Prepare payload
+      const payload = {
+        ...data,
+        idFile1Url,
+        idFile2Url,
+        photoFileUrl,
+      }
+
       const response = await fetch('/api/membership/payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       })
 
       const result = await response.json()

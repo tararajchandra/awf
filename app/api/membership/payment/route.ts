@@ -30,9 +30,12 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { tier, email, phone, fullName } = body
-
-    if (!tier || tier !== 'MEMBER') {
+    const tier = body.selectedTier || body.tier
+    const phone = body.mobile || body.phone
+    const email = body.email
+    
+    // In the future you might support more tiers
+    if (!tier) {
       return NextResponse.json(
         { error: 'Invalid membership tier' },
         { status: 400 }
@@ -42,7 +45,7 @@ export async function POST(request: NextRequest) {
     const memberId = generateMemberId()
 
     // Create a subscription
-    const subscription = await createRazorpaySubscription(
+    const subscription: any = await createRazorpaySubscription(
       'member_annual',
       email,
       phone,
@@ -67,10 +70,12 @@ export async function POST(request: NextRequest) {
         fullName: body.fullName || '',
         mobile: phone,
         email: email || '',
-        idType: 'AADHAAR', // Stub for now
-        idFileUrl: '',
-        photoUrl: '',
+        idType: body.idType1 || 'AADHAAR',
+        idFileUrl: body.idFile1Url || '',
+        photoUrl: body.photoFileUrl || '',
         address: JSON.stringify(body.address || {}),
+        bankDetails: JSON.stringify(body.bankDetails || {}),
+        memberTier: tier,
         referredById: referredByInternalId,
         status: 'PENDING',
         razorpaySubscriptionId: subscription.id,
